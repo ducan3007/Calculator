@@ -23,6 +23,7 @@ export default function App() {
   const [isOpenParenthesis, setOpen] = useState(true);
   const [result, setResult] = useState("");
   const [index, setIndex] = useState({ end: 0, start: 0 });
+  const [error, setError] = useState(false);
 
   const onSelectionChange = (position) => {
     setIndex(position);
@@ -33,12 +34,12 @@ export default function App() {
 
   return (
     <View style={styles(theme).container}>
-      <SafeAreaView>
+      <View>
         <View style={styles(theme).display}>
           <View style={styles(theme).header}>
             <View style={styles(theme).changeMode}>
               <TouchableOpacity onPress={changeMode}>
-                <Ionicons name={theme ? "moon-outline" : "moon"} size={32} />
+                <Ionicons name={theme ? "moon-outline" : "moon"} size={40} />
               </TouchableOpacity>
             </View>
             <View style={styles(theme).headerInput}>
@@ -48,14 +49,14 @@ export default function App() {
                   onSelectionChange(event.nativeEvent.selection)
                 }
                 autoFocus
-                style={styles(theme).equationTextInput}
+                style={styles(theme,error).ExpressionTextInput}
               >
                 {expression}
               </TextInput>
             </View>
           </View>
           <View style={styles(theme).resultScreen}>
-            <Text style={styles(theme).resultText}>{result}</Text>
+            <Text style={styles(theme,error).resultText}>{result}</Text>
           </View>
         </View>
         <View style={styles(theme).button}>
@@ -69,6 +70,7 @@ export default function App() {
               type="func"
               mode={theme}
               content={"AC"}
+              setError={setError}
               colorTheme="secondary"
             />
             <Button
@@ -79,8 +81,8 @@ export default function App() {
               isOpenParenthesis={isOpenParenthesis}
               setOpen={setOpen}
               mode={theme}
-              content={"()"}
-              colorTheme="secondary"
+              content={"( )"}
+              colorTheme="primary"
             />
             <Button
               index={index}
@@ -90,7 +92,7 @@ export default function App() {
               type="operator"
               mode={theme}
               content={"%"}
-              colorTheme="secondary"
+              colorTheme="primary"
             />
             <Button
               index={index}
@@ -244,18 +246,19 @@ export default function App() {
               expression={expression}
               type="operator"
               mode={theme}
+              setError={setError}
               content={"="}
               setResult={setResult}
-              colorTheme="primary"
+              colorTheme="secondary"
             />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
 
-const styles = (mode) =>
+const styles = (mode,error) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -266,26 +269,25 @@ const styles = (mode) =>
     },
     display: {
       flex: 2,
-      borderWidth: 1,
-      borderRadius: 25,
-      borderColor: mode ? theme.dark : theme.light,
-      margin: 5,
+      borderBottomRightRadius: 23,
+      borderBottomLeftRadius: 23,
+      backgroundColor: mode ? 'rgba(233,239,251,0.9)' :'rgba(53,56,63,0.9)',
     },
     changeMode: {
       flex: 1,
-      top: 10,
-      left: 10,
+      top: 48,
+      left: 17,
     },
     headerInput: {
       flex: 3,
       justifyContent: "center",
-      paddingRight: 5,
+      paddingRight: 10,
       paddingLeft: 5,
     },
-    equationTextInput: {
+    ExpressionTextInput: {
       textAlign: "right",
-      fontSize: 45,
-      color: mode ? theme.lightModeText : theme.darkModeText,
+      fontSize: 60,
+      color: error ? theme.error : mode ? theme.lightModeText : theme.darkModeText,
     },
     header: {
       flex: 2,
@@ -297,9 +299,9 @@ const styles = (mode) =>
     },
     resultText: {
       textAlign: "right",
-      paddingRight: 10,
-      fontSize: 30,
-      color: mode ? theme.lightModeText : theme.darkModeText,
+      paddingRight: 15,
+      fontSize: 25,
+      color: error ? theme.error : mode ? theme.lightModeText : theme.darkModeText,
     },
     button: {
       flex: 3,

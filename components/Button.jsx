@@ -15,6 +15,7 @@ const Button = ({
   setResult,
   index,
   setIndex,
+  setError,
 }) => {
   const set = (content, type) => {
     let Exp = expression;
@@ -30,10 +31,11 @@ const Button = ({
       case "AC":
         setExpression("");
         setResult("");
+        setError(false);
         setIndex({});
         setOpen(true);
         break;
-      case "()":
+      case "( )":
         if (isOpenParenthesis) {
           setExpression(set("("));
         } else {
@@ -95,7 +97,7 @@ const Button = ({
       case "=":
         try {
           let exp = expression;
-          if (exp.includes("÷÷") || exp.includes("xx")) {
+          if (exp.includes("÷÷") || exp.includes("xx") || exp.includes("x%")) {
             throw new Error();
           }
           exp = exp
@@ -104,18 +106,21 @@ const Button = ({
             .replace(/x/g, "*")
             .replace(/\-\-+/g, "+")
             .replace(/\+\++/g, "+");
-            
-            console.log(exp);
+
+          console.log(exp);
           let result = eval(exp);
 
           if (result === Infinity) {
-            setResult("Error expression");
+            setError(true);
+            setResult("Lỗi dạng thức");
           } else if (expression != "") {
+            setError(false);
             setResult("= " + result);
           }
         } catch (error) {
           console.log(error);
-          setResult("Error expression ");
+          setError(true);
+          setResult("Lỗi dạng thức");
         }
         break;
       default:
@@ -126,7 +131,7 @@ const Button = ({
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress}>
         <View style={styles(mode, colorTheme).button}>
-          <Text style={styles(mode).text}>{content}</Text>
+          <Text style={styles(mode, colorTheme).text}>{content}</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -139,8 +144,8 @@ const styles = (mode, colorTheme) =>
       padding: 10,
     },
     button: {
-      width: Math.floor(WIDTH / 4 - 15),
-      height: Math.floor(WIDTH / 4 - 15),
+      width: Math.floor(WIDTH / 4 - 18),
+      height: Math.floor(WIDTH / 4 - 18),
       backgroundColor:
         colorTheme === "primary"
           ? theme.primaryButton
@@ -155,7 +160,7 @@ const styles = (mode, colorTheme) =>
     },
     text: {
       fontSize: 23,
-      color: mode ? theme.lightModeText : theme.darkModeText,
+      color: colorTheme ==='primary' || colorTheme ==='secondary'? theme.lightModeText : mode ? theme.lightModeText : theme.darkModeText,
     },
   });
 
