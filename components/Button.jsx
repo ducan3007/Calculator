@@ -4,6 +4,9 @@ import theme from "../theme";
 
 const WIDTH = Dimensions.get("screen").width;
 
+const primary = ["( )", "%", "÷", "x", "+", "-"];
+const secondary = ["AC", "="];
+
 const Button = ({
   content,
   mode,
@@ -17,12 +20,19 @@ const Button = ({
   setIndex,
   setError,
 }) => {
+  if (primary.includes(content)) {
+    colorTheme = "primary";
+  }
+  if (secondary.includes(content)) {
+    colorTheme = "secondary";
+  }
+
   const set = (content, type) => {
-    let Exp = expression;
+    let exp = expression;
     if (type === "DEL") {
-      return Exp.slice(0, index.end - 1) + Exp.slice(index.end, Exp.length);
+      return exp.slice(0, index.end - 1) + exp.slice(index.end, exp.length);
     } else {
-      return Exp.slice(0, index.end) + content + Exp.slice(index.end, Exp.length);
+      return exp.slice(0, index.end) + content + exp.slice(index.end, exp.length);
     }
   };
 
@@ -46,54 +56,6 @@ const Button = ({
       case "DEL":
         setExpression(set("", "DEL"));
         break;
-      case "%":
-        setExpression(set("%"));
-        break;
-      case "÷":
-        setExpression(set("÷"));
-        break;
-      case "x":
-        setExpression(set("x"));
-        break;
-      case "-":
-        setExpression(set("-"));
-        break;
-      case "+":
-        setExpression(set("+"));
-        break;
-      case ".":
-        setExpression(set("."));
-        break;
-      case "1":
-        setExpression(set("1"));
-        break;
-      case "2":
-        setExpression(set("2"));
-        break;
-      case "3":
-        setExpression(set("3"));
-        break;
-      case "4":
-        setExpression(set("4"));
-        break;
-      case "5":
-        setExpression(set("5"));
-        break;
-      case "6":
-        setExpression(set("6"));
-        break;
-      case "7":
-        setExpression(set("7"));
-        break;
-      case "8":
-        setExpression(set("8"));
-        break;
-      case "9":
-        setExpression(set("9"));
-        break;
-      case "0":
-        setExpression(set("0"));
-        break;
       case "=":
         try {
           let exp = expression;
@@ -107,9 +69,7 @@ const Button = ({
             .replace(/\-\-+/g, "+")
             .replace(/\+\++/g, "+");
 
-          console.log(exp);
           let result = eval(exp);
-
           if (result === Infinity) {
             setError(true);
             setResult("Lỗi dạng thức");
@@ -118,12 +78,12 @@ const Button = ({
             setResult("= " + result);
           }
         } catch (error) {
-          console.log(error);
           setError(true);
           setResult("Lỗi dạng thức");
         }
         break;
       default:
+        setExpression(set(content));
     }
   };
 
@@ -160,7 +120,12 @@ const styles = (mode, colorTheme) =>
     },
     text: {
       fontSize: 23,
-      color: colorTheme ==='primary' || colorTheme ==='secondary'? theme.lightModeText : mode ? theme.lightModeText : theme.darkModeText,
+      color:
+        colorTheme === "primary" || colorTheme === "secondary"
+          ? theme.lightModeText
+          : mode
+          ? theme.lightModeText
+          : theme.darkModeText,
     },
   });
 
